@@ -789,8 +789,10 @@
             
             
             function selectHandler() {
-              var selectedItem = chart.chart.getSelection()[0];
-              remoteSelectionHandler(selectedItem, data);
+                if (typeof remoteSelectionHandler !== 'undefined'){
+                var selectedItem = chart.chart.getSelection()[0];
+                remoteSelectionHandler(selectedItem, data);
+              }
             };
   
             google.visualization.events.addListener(chart.chart, 'select', selectHandler);
