@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Add grouped tooltip timelines
+
 ## 2.0.1
 
 - Add grouped timelines
