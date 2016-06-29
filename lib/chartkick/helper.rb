@@ -39,6 +39,10 @@ module Chartkick
       chartkick_chart "GroupedTimeline", data_source, options
     end
 
+    def grouped_tooltip_timeline(data_source, options = {})
+      chartkick_chart "GroupedTimeline", data_source, options
+    end
+
     private
 
     def chartkick_chart(klass, data_source, options)

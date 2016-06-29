@@ -803,6 +803,45 @@
             });
           });
         };
+        
+        this.renderGroupedTooltipTimeline = function (chart) {
+          waitForLoaded("timeline", function () {
+            var chartOptions = {
+              legend: "none"
+            };
+
+            if (chart.options.colors) {
+              chartOptions.colors = chart.options.colors;
+            }
+            var options = merge(merge(defaultOptions, chartOptions), chart.options.library || {});
+
+            var data = new google.visualization.DataTable();
+            data.addColumn({type: "string", id: "Role"});
+            data.addColumn({type: "string", id: "Name"});
+            dataTable.addColumn({ type: 'string', role: 'tooltip' });
+            data.addColumn({type: "date", id: "Start"});
+            data.addColumn({type: "date", id: "End"});
+            data.addRows(chart.data);
+
+            chart.element.style.lineHeight = "normal";
+            chart.chart = new google.visualization.Timeline(chart.element);
+            
+            
+            function selectHandler() {
+                if (typeof remoteSelectionHandler !== 'undefined'){
+                var selectedItem = chart.chart.getSelection()[0];
+                remoteSelectionHandler(selectedItem, data);
+              }
+            };
+  
+            google.visualization.events.addListener(chart.chart, 'select', selectHandler);
+
+
+            resize(function () {
+              chart.chart.draw(data, options);
+            });
+          });
+        };
       };
 
       adapters.push(GoogleChartsAdapter);
@@ -1299,6 +1338,16 @@
     return data;
   }
 
+  function processGroupedTooltipTime(data)
+  {
+    var i;
+    for (i = 0; i < data.length; i++) {
+      data[i][3] = toDate(data[i][3]);
+      data[i][4] = toDate(data[i][4]);
+    }
+    return data;
+  }
+
   function processLineData(chart) {
     chart.data = processSeries(chart.data, chart.options, "datetime");
     renderChart("LineChart", chart);
@@ -1342,6 +1391,11 @@
   function processGroupedTimelineData(chart) {
     chart.data = processGroupedTime(chart.data);
     renderChart("GroupedTimeline", chart);
+  }
+
+  function processGroupedTooltipTimelineData(chart) {
+    chart.data = processGroupedTime(chart.data);
+    renderChart("GroupedTooltipTimeline", chart);
   }
 
   function setElement(chart, element, dataSource, opts, callback) {
@@ -1396,6 +1450,9 @@
     },
     GroupedTimeline: function (element, dataSource, opts) {
       setElement(this, element, dataSource, opts, processGroupedTimelineData);
+    },
+    GroupedTooltipTimeline: function (element, dataSource, opts) {
+      setElement(this, element, dataSource, opts, processGroupedTooltipTimelineData);
     },
     charts: {}
   };
