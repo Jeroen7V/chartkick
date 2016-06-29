@@ -2,7 +2,7 @@
  * Chartkick.js
  * Create beautiful JavaScript charts with minimal code
  * https://github.com/ankane/chartkick.js
- * v2.0.0
+ * v2.0.1
  * MIT License
  */
 
@@ -765,6 +765,42 @@
             });
           });
         };
+        
+        this.renderGroupedTimeline = function (chart) {
+          waitForLoaded("timeline", function () {
+            var chartOptions = {
+              legend: "none"
+            };
+
+            if (chart.options.colors) {
+              chartOptions.colors = chart.options.colors;
+            }
+            var options = merge(merge(defaultOptions, chartOptions), chart.options.library || {});
+
+            var data = new google.visualization.DataTable();
+            data.addColumn({type: "string", id: "Role"});
+            data.addColumn({type: "string", id: "Name"});
+            data.addColumn({type: "date", id: "Start"});
+            data.addColumn({type: "date", id: "End"});
+            data.addRows(chart.data);
+
+            chart.element.style.lineHeight = "normal";
+            chart.chart = new google.visualization.Timeline(chart.element);
+            
+            
+            function selectHandler() {
+              var selectedItem = chart.chart.getSelection()[0];
+              remoteSelectionHandler(selectedItem, data);
+            };
+  
+            google.visualization.events.addListener(chart.chart, 'select', selectHandler);
+
+
+            resize(function () {
+              chart.chart.draw(data, options);
+            });
+          });
+        };
       };
 
       adapters.push(GoogleChartsAdapter);
@@ -1251,6 +1287,16 @@
     return data;
   }
 
+  function processGroupedTime(data)
+  {
+    var i;
+    for (i = 0; i < data.length; i++) {
+      data[i][2] = toDate(data[i][2]);
+      data[i][3] = toDate(data[i][3]);
+    }
+    return data;
+  }
+
   function processLineData(chart) {
     chart.data = processSeries(chart.data, chart.options, "datetime");
     renderChart("LineChart", chart);
@@ -1289,6 +1335,11 @@
   function processTimelineData(chart) {
     chart.data = processTime(chart.data);
     renderChart("Timeline", chart);
+  }
+
+  function processGroupedTimelineData(chart) {
+    chart.data = processGroupedTime(chart.data);
+    renderChart("GroupedTimeline", chart);
   }
 
   function setElement(chart, element, dataSource, opts, callback) {
@@ -1340,6 +1391,9 @@
     },
     Timeline: function (element, dataSource, opts) {
       setElement(this, element, dataSource, opts, processTimelineData);
+    },
+    GroupedTimeline: function (element, dataSource, opts) {
+      setElement(this, element, dataSource, opts, processGroupedTimelineData);
     },
     charts: {}
   };
