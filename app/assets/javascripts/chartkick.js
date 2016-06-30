@@ -818,7 +818,7 @@
             var data = new google.visualization.DataTable();
             data.addColumn({type: "string", id: "Role"});
             data.addColumn({type: "string", id: "Name"});
-            data.addColumn({ type: 'string', role: 'tooltip' });
+            data.addColumn({ type: 'string', role: 'tooltip', 'p': {'html': true}});
             data.addColumn({type: "date", id: "Start"});
             data.addColumn({type: "date", id: "End"});
             data.addRows(chart.data);
