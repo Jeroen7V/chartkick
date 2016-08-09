@@ -1,8 +1,13 @@
-## 2.0.2
+## 2.0.1
+
+- Small Chartkick.js fixes
+- Updated Chart.js to 2.2.0
+
+## 2.0.0.2
 
 - Add grouped tooltip timelines
 
-## 2.0.1
+## 2.0.0.1
 
 - Add grouped timelines
 
